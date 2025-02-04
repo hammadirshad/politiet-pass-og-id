@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: politiet-pass-og-id-cronjob
+  namespace: pass-og-id
+spec:
+  schedule: "*/15 7-23 * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      backoffLimit: 1
+      template:
+        spec:
+          imagePullSecrets:
+            - name: acr-regcred
+          containers:
+            - name: politiet-pass-og-id
+              image: crkregdev.azurecr.io/politiet-pass-og-id
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: SENDGRID_API_KEY
+                  value: SG.3CfdbYvHRVCDi08cKjRj0g.xxx
+                - name: SENDGRID_FROM_EMAIL
+                  value: xxx@outlook.com
+                - name: SENDGRID_TO_EMAIL
+                  value: xxx@gmail.com
+                - name: LIMIT-DATE
+                  value: 2025-02-05
+          restartPolicy: Never
